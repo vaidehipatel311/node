@@ -1,7 +1,7 @@
 [
     {
     "path" : "/signup",
-    "method": "",
+    "method": "get",
     "action" : "auth.adminSignup",
     "public" : true,
     "globalMiddlewares": [],

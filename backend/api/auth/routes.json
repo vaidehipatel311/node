@@ -1,0 +1,31 @@
+[
+    {
+    "path" : "/signup",
+    "method": "",
+    "action" : "auth.adminSignup",
+    "public" : true,
+    "globalMiddlewares": [],
+    "middlewares": [],
+    "pathFromRoot": false,
+    "enabled": true
+},
+{
+    "path" : "/login",
+    "method": "get",
+    "action" : "auth.adminSignup",
+    "public" : true,
+    "globalMiddlewares": [],
+    "middlewares": [],
+    "pathFromRoot": false,
+    "enabled": true
+},
+{
+    "path" : "/",
+    "method": "get",
+    "action" : "auth.adminSignup",
+    "public" : true,
+    "globalMiddlewares": [],
+    "middlewares": [],
+    "pathFromRoot": false,
+    "enabled": true
+}]

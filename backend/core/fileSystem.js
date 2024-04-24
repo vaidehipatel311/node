@@ -1,7 +1,7 @@
 var http = require('http');
 var colors = require('colors');
 var fs = require('fs');
-const { signup, login, home } = require('../api/auth/controllers/authController');
+const { signup, login, home } = require('../api/auth/module1/controllers/authController');
 colors.enable()
 
 function createServer() {
@@ -22,7 +22,7 @@ function createServer() {
 function readRoutesFile() {
 
     return new Promise((resolve, reject) => {
-        fs.readFile('./api/auth/routes.json', (err, data) => {
+        fs.readFile('./api/auth/module1/routes.json', (err, data) => {
             if (err) {
                 reject(err);
             } else {

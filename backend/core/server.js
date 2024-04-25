@@ -8,7 +8,7 @@ colors.enable()
 global.framework = {
     services: {
         module1: {
-            module1Services: module1Services
+            module1Services: module1Services,
         }
     }
 };

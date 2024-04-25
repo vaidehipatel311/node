@@ -1,8 +1,19 @@
 var http = require('http');
 var colors = require('colors');
 var fs = require('fs');
-const { signup, login, home } = require('../api/auth/module1/controllers/authController');
+const { signup, login, home } = require('../api/module1/controllers/authController');
+const module1Services = require('../api/module1/services/module1Services');
 colors.enable()
+
+global.framework = {
+    services: {
+        module1: {
+            module1Services: module1Services
+        }
+    }
+};
+
+global.framework.services.module1.module1Services = require('../api/module1/services/module1Services');
 
 function createServer() {
     http.createServer(function (req, res) {
@@ -22,7 +33,7 @@ function createServer() {
 function readRoutesFile() {
 
     return new Promise((resolve, reject) => {
-        fs.readFile('./api/auth/module1/routes.json', (err, data) => {
+        fs.readFile('./api/module1/routes.json', (err, data) => {
             if (err) {
                 reject(err);
             } else {
@@ -63,6 +74,7 @@ readRoutesFile()
             validationErrors.forEach(error => console.error(error));
         } else {
             createServer();
+            framework.services.module1.module1Services.myService();
         }
     }).catch(error => {
         console.error("Error reading or validating routes:", error);

@@ -1,19 +1,74 @@
 var http = require('http');
 var colors = require('colors');
 var fs = require('fs');
+const path = require('path');
 const { signup, login, home } = require('../api/module1/controllers/authController');
-const module1Services = require('../api/module1/services/module1Services');
+// const module1Services = require('../api/module1/services/module1Services');
+// const demo = require('../app');
+
 colors.enable()
 
-global.framework = {
-    services: {
-        module1: {
-            module1Services: module1Services,
+function loadServices() {
+    const services = {};
+    const modulesPath = path.join(__dirname, '..', 'api');
+
+
+
+    // Read the contents of the modules directory
+    const moduleDirectories = fs.readdirSync(modulesPath);
+
+
+
+    // Iterate over each module directory
+    moduleDirectories.forEach(moduleDir => {
+        const modulePath = path.join(modulesPath, moduleDir);
+        const moduleStat = fs.statSync(modulePath);
+
+
+        // Check if it's a directory
+        if (moduleStat.isDirectory()) {
+            const servicesPath = path.join(modulePath, 'services');
+            console.log(servicesPath);
+
+            // const servicesFiles = fs.readdirSync(servicesPath);
+
+            // Iterate over each file in the services directory
+            // servicesFiles.forEach(file => {
+            //     // Assuming services file starts with 'module'
+            //     if (file.startsWith('module')) {
+            //         const serviceName = path.basename(file, '.js');
+            //         const serviceModule = require(path.join(servicesPath, file));
+            //         services[moduleDir] = serviceModule;
+            //     }
+            // });
+
+            if (fs.existsSync(servicesPath)) {
+                const serviceFile = path.join(servicesPath, 'service.js');
+
+                // Check if the service file exists
+                if (fs.existsSync(serviceFile)) {
+                    const serviceModule = require(serviceFile);
+                    services[moduleDir] = serviceModule;
+                }
+            }
         }
-    }
+    });
+
+    return services;
+}
+
+
+global.framework = {
+    // services: {
+    //     module1: {
+    //         module1Services: module1Services,
+    //     }
+    // }
+
+    services: loadServices()
 };
 
-global.framework.services.module1.module1Services = require('../api/module1/services/module1Services');
+// global.framework.services.module1.module1Services = require('../api/module1/services/module1Services');
 
 function createServer() {
     http.createServer(function (req, res) {
@@ -74,7 +129,7 @@ readRoutesFile()
             validationErrors.forEach(error => console.error(error));
         } else {
             createServer();
-            framework.services.module1.module1Services.myService();
+            // framework.services.module1.module1Services.myService();
         }
     }).catch(error => {
         console.error("Error reading or validating routes:", error);

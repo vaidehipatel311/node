@@ -31,13 +31,33 @@ function getServices() {
     return services;
 }
 
+function getFunctions() {
+    const functions = {};
+    const modulesPath = path.join(__dirname, '..', 'functions');
+
+    const moduleDirectories = fs.readdirSync(modulesPath);
+
+    moduleDirectories.forEach(file => {
+
+
+        const serviceName = path.basename(file, '.js');
+
+        const serviceModule = require(path.join(modulesPath, file));
+
+        functions[serviceName] = serviceModule
+
+    });
+    return functions;
+}
+
 
 global.framework = {
-    services: getServices()
+    services: getServices(),
+    functions: getFunctions()
 };
 
 module.exports = global.framework;
-const demo = require('../test');
+const test = require('../test');
 
 function createServer() {
     http.createServer(function (req, res) {
@@ -100,7 +120,9 @@ readRoutesFile()
         } else {
             createServer();
             framework.services.module1.module1Services.myService();
-            demo
+            framework.functions.fileUtils.readJSONFile('./functions/function1.js');
+            framework.functions.function1.myFunction1();
+            test
         }
     }).catch(error => {
         console.error("Error reading or validating routes:", error);

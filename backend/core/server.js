@@ -37,7 +37,7 @@ global.framework = {
 };
 
 module.exports = global.framework;
-const demo = require('../app');
+const demo = require('../test');
 
 function createServer() {
     http.createServer(function (req, res) {

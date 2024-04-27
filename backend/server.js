@@ -2,7 +2,6 @@ var http = require('http');
 var colors = require('colors');
 var fs = require('fs');
 const path = require('path');
-const { signup, login, home } = require('./api/module1/controllers/authController');
 colors.enable()
 
 function getServices() {
@@ -57,6 +56,28 @@ function getCrons() {
     return crons;
 }
 
+function getControllers() {
+    const controllers = {};
+    const modulesPath = path.join(__dirname, '.', 'api');
+
+    const moduleDirectories = fs.readdirSync(modulesPath);
+
+    moduleDirectories.forEach(moduleDir => {
+        const modulePath = path.join(modulesPath, moduleDir);
+
+        const controllersPath = path.join(modulePath, 'controllers');
+
+        const controllerFiles = fs.readdirSync(controllersPath);
+
+        controllerFiles.forEach(file => {
+            const controllerName = path.basename(file, '.js');
+            const controllerModule = require(path.join(controllersPath, file));
+            controllers[moduleDir] = { [controllerName]: controllerModule }
+        });
+    });
+    return controllers;
+}
+
 // function getServices() {
 //     const services = {};
 //     const modulesPath = path.join(__dirname, '.', 'core', 'services');
@@ -91,18 +112,20 @@ global.framework = {
     services: getServices(),
     functions: getFunctions(),
     crons: getCrons(),
+    controllers: getControllers(),
 };
 
 module.exports = global.framework;
 
+
 function createServer() {
     http.createServer(function (req, res) {
         if (req.url == '/signup') {
-            signup(req, res);
+            framework.controllers.module1.module1Controller.signup(req, res);
         } else if (req.url == '/login') {
-            login(req, res);
+            framework.controllers.module1.module1Controller.login(req, res);
         } else if (req.url == '/') {
-            home(req, res);
+            framework.controllers.module1.module1Controller.home(req, res);
         }
     }).listen(8083, () => {
         console.log('Server is running on port 8083');

@@ -2,12 +2,12 @@ var http = require('http');
 var colors = require('colors');
 var fs = require('fs');
 const path = require('path');
-const { signup, login, home } = require('../api/module1/controllers/authController');
+const { signup, login, home } = require('./api/module1/controllers/authController');
 colors.enable()
 
 function getServices() {
     const services = {};
-    const modulesPath = path.join(__dirname, '..', 'api');
+    const modulesPath = path.join(__dirname, '.', 'api');
 
     const moduleDirectories = fs.readdirSync(modulesPath);
 
@@ -33,31 +33,67 @@ function getServices() {
 
 function getFunctions() {
     const functions = {};
-    const modulesPath = path.join(__dirname, '..', 'functions');
-
+    const modulesPath = path.join(__dirname, '.', 'core', 'functions');
     const moduleDirectories = fs.readdirSync(modulesPath);
 
     moduleDirectories.forEach(file => {
-
-
         const serviceName = path.basename(file, '.js');
-
         const serviceModule = require(path.join(modulesPath, file));
-
         functions[serviceName] = serviceModule
-
     });
     return functions;
 }
 
+function getCrons() {
+    const crons = {};
+    const modulesPath = path.join(__dirname, '.', 'core', 'crons');
+    const moduleDirectories = fs.readdirSync(modulesPath);
+
+    moduleDirectories.forEach(file => {
+        const serviceName = path.basename(file, '.js');
+        const serviceModule = require(path.join(modulesPath, file));
+        crons[serviceName] = serviceModule
+    });
+    return crons;
+}
+
+// function getServices() {
+//     const services = {};
+//     const modulesPath = path.join(__dirname, '.', 'core', 'services');
+
+//     const moduleDirectories = fs.readdirSync(modulesPath);
+
+//     moduleDirectories.forEach(file => {
+//         // const modulePath = path.join(modulesPath, moduleDir);
+
+//         // const servicesPath = path.join(modulePath, 'services');
+
+//         // const servicesFiles = fs.readdirSync(servicesPath);
+
+//         // servicesFiles.forEach(file => {
+//         // if (file.startsWith('module')) {
+//         const serviceName = path.basename(file, '.js');
+//         const moduleName = serviceName.split('S')[0];
+
+//         const serviceModule = require(path.join(modulesPath, file));
+//         console.log(serviceModule);
+//         services[moduleName] = { [serviceName]: serviceModule }
+//     }
+//         // });
+
+//         // }
+//     );
+
+//     return services;
+// }
 
 global.framework = {
     services: getServices(),
-    functions: getFunctions()
+    functions: getFunctions(),
+    crons: getCrons(),
 };
 
 module.exports = global.framework;
-const test = require('../test');
 
 function createServer() {
     http.createServer(function (req, res) {
@@ -77,16 +113,14 @@ function createServer() {
 function readRoutesFile() {
 
     return new Promise((resolve, reject) => {
-        fs.readFile('./api/module1/routes.json', (err, data) => {
+        fs.readFile('./core/routes.json', (err, data) => {
             if (err) {
                 reject(err);
             } else {
                 resolve(JSON.parse(data));
-
             }
         });
     });
-
 }
 
 
@@ -120,9 +154,10 @@ readRoutesFile()
         } else {
             createServer();
             framework.services.module1.module1Services.myService();
-            framework.functions.fileUtils.readJSONFile('./functions/function1.js');
+            framework.functions.fileUtils.readJSONFile('./core/functions/function1.js');
             framework.functions.function1.myFunction1();
-            test
+            framework.crons.cron1.myCron1();
+
         }
     }).catch(error => {
         console.error("Error reading or validating routes:", error);

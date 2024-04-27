@@ -19,4 +19,6 @@ function readJSONFile(filePath) {
     });
 }
 
-module.exports = { readJSONFile };
+module.exports = {
+    readJSONFile: readJSONFile
+};

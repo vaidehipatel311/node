@@ -2,7 +2,7 @@
     {
     "path" : "/signup",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "auth.signup",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],
@@ -12,7 +12,7 @@
 {
     "path" : "/login",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "auth.login",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],
@@ -22,8 +22,8 @@
 {
     "path" : "/",
     "method": "get",
-    "action" : "auth.adminSignup",
-    "public" : true,
+    "action" : "auth.home",
+    "public" : false,
     "globalMiddlewares": [],
     "middlewares": [],
     "pathFromRoot": false,

@@ -2,6 +2,8 @@ var http = require('http');
 var colors = require('colors');
 var fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 colors.enable()
 
 function getServices() {
@@ -146,11 +148,14 @@ function readRoutesFile() {
     });
 }
 
-
 readRoutesFile()
     .then(routes => {
         let validationErrors = [];
+        var token = jwt.sign({ routes }, process.env.SECRET_KEY, { expiresIn: '1d' });
+
         routes.forEach((obj, index) => {
+            console.log(obj.action, obj.path);
+
             const requiredKeys = ["path", "method", "action", "public", "globalMiddlewares", "middlewares", "pathFromRoot", "enabled"];
             const missingKeys = requiredKeys.filter(key => !(key in obj));
             const emptyKeys = requiredKeys.filter(key => key in obj && (!obj[key] && obj[key] !== false));
@@ -170,6 +175,20 @@ readRoutesFile()
             } else if (!validBooleanValues.includes(obj.enabled)) {
                 validationErrors.push(`[Error]: Invalid enabled value "${obj.enabled}"for [API] : "${obj.path}"`.red);
             }
+            else if (obj.public === false) {
+                if (!token) {
+                    validationErrors.push(`\n[Error]: No token provided[API]: ${obj.path}`)
+                }
+                else {
+                    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+                        if (err) {
+                            validationErrors.push(`\n[Error]: Invalid token[API]: ${obj.path}`);
+                        }
+                        console.log(obj.path, '---> Token Verified');
+                    });
+                    return
+                }
+            }
         });
 
         if (validationErrors.length > 0) {
@@ -179,7 +198,7 @@ readRoutesFile()
             framework.services.module1.module1Services.myService();
             framework.functions.fileUtils.readJSONFile('./core/functions/function1.js');
             framework.functions.function1.myFunction1();
-            framework.crons.cron1.myCron1();
+            // framework.crons.cron1.myCron1();
 
         }
     }).catch(error => {

@@ -1,0 +1,31 @@
+[
+    {
+    "path" : "/route1",
+    "method": "get",
+    "action" : "auth.adminSignup",
+    "public" : true,
+    "globalMiddlewares": [],
+    "middlewares": [],
+    "pathFromRoot": false,
+    "enabled": true
+},
+{
+    "path" : "/route2",
+    "method": "get",
+    "action" : "auth.adminSignup",
+    "public" : true,
+    "globalMiddlewares": [],
+    "middlewares": [],
+    "pathFromRoot": false,
+    "enabled": true
+},
+{
+    "path" : "/route3",
+    "method": "get",
+    "action" : "auth.adminSignup",
+    "public" : true,
+    "globalMiddlewares": [],
+    "middlewares": [],
+    "pathFromRoot": false,
+    "enabled": true
+}]

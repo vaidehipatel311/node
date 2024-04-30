@@ -1,13 +1,13 @@
-function signup(req, res) {
-    res.end('Admin signed up successfully');
+function signup() {
+    console.log('Admin signed up successfully');
 }
 
-function login(req, res) {
-    res.end('Admin Logged In successfully');
+function login() {
+    console.log('Admin Logged In successfully');
 }
 
-function home(req, res) {
-    res.end('Home Page');
+function home() {
+    console.log('Home Page');
 }
 
 module.exports = {

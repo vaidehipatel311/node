@@ -20,13 +20,13 @@ global.framework = framework;
 
 function createServer() {
     http.createServer(function (req, res) {
-        if (req.url == '/signup') {
-            framework.routes.module1.module1Controller.signup(req, res);
-        } else if (req.url == '/login') {
-            framework.routes.module1.module1Controller.login(req, res);
-        } else if (req.url == '/') {
-            framework.routes.module1.module1Controller.home(req, res);
-        }
+        // if (req.url == '/signup') {
+        framework.routes.module1.module1Controller.signup();
+        // } else if (req.url == '/login') {
+        framework.routes.module1.module1Controller.login();
+        // } else if (req.url == '/') {
+        framework.routes.module1.module1Controller.home();
+        // }
     }).listen(8083, () => {
         console.log('Server is running on port 8083');
     });

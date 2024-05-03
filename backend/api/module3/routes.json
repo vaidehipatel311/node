@@ -2,7 +2,7 @@
     {
     "path" : "/route1",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "module3.route1",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],
@@ -12,7 +12,7 @@
 {
     "path" : "/route2",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "module3.route2",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],
@@ -22,7 +22,7 @@
 {
     "path" : "/route3",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "module3.route3",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],

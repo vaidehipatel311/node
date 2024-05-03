@@ -19,6 +19,7 @@ function getServices() {
                 services[moduleDir] = { [serviceName]: serviceModule }
             }
         });
+
     });
     return services;
 }

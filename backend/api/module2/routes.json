@@ -1,8 +1,8 @@
 [
     {
-    "path" : "/signup",
+    "path" : "/one",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "module2.one",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],
@@ -10,9 +10,9 @@
     "enabled": true
 },
 {
-    "path" : "/login",
+    "path" : "/two",
     "method": "get",
-    "action" : "auth.adminSignup",
+    "action" : "module2.two",
     "public" : true,
     "globalMiddlewares": [],
     "middlewares": [],
@@ -20,10 +20,10 @@
     "enabled": true
 },
 {
-    "path" : "/",
+    "path" : "/three",
     "method": "get",
-    "action" : "auth.adminSignup",
-    "public" : true,
+    "action" : "module2.three",
+    "public" : false,
     "globalMiddlewares": [],
     "middlewares": [],
     "pathFromRoot": false,

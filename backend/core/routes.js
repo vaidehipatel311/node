@@ -1,6 +1,30 @@
 var fs = require('fs');
-const jwt = require('jsonwebtoken');
 const path = require('path');
+const express = require('express');
+const router = express.Router();
+var colors = require('colors');
+const { verifyToken } = require('../middleware/jwtAuthMiddleware');
+colors.enable()
+
+function initializeServer(createServer) {
+    readRoutesFile()
+        .then(routes => {
+
+            const isValid = validateRoutes(routes);
+            if (isValid) {
+
+                createServer();
+                router.use((req, res, next) => {
+                    loadControllerRoutes(req, res, next);
+                    next();
+                });
+
+
+            }
+        }).catch(error => {
+            console.error("Error reading or validating routes:", error);
+        });
+}
 
 function readRoutesFile() {
     const routes = {}
@@ -34,7 +58,6 @@ function validateRoutes(routes) {
     const validMethods = ['get', 'post', 'delete', 'put', 'patch'];
     const requiredKeys = ["path", "method", "action", "public", "globalMiddlewares", "middlewares", "pathFromRoot", "enabled"];
     const validBooleanValues = [true, false];
-    var token = jwt.sign({ routes }, process.env.SECRET_KEY, { expiresIn: '1d' });
 
     Object.keys(routes).forEach(moduleName => {
         const moduleRoutes = routes[moduleName];
@@ -57,20 +80,6 @@ function validateRoutes(routes) {
             } else if (!validBooleanValues.includes(obj.enabled)) {
                 validationErrors.push(`[Error]: Invalid enabled value "${obj.enabled}"for [API] : "${obj.path}"`.red);
             }
-            else if (obj.public === false) {
-                if (!token) {
-                    validationErrors.push(`\n[Error]: No token provided[API]: ${obj.path}`)
-                }
-                else {
-                    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-                        if (err) {
-                            validationErrors.push(`\n[Error]: Invalid token[API]: ${obj.path}`);
-                        }
-                        console.log(obj.path, '---> Token Verified');
-                    });
-                    return
-                }
-            }
         });
 
     });
@@ -80,32 +89,52 @@ function validateRoutes(routes) {
         return false;
     } else {
         return true;
-        // createServer();
-
     }
-
 }
 
-function getRoutes() {
-    const controllers = {};
+function loadRoutes() {
+    const routes = [];
     const modulesPath = path.join(__dirname, '..', 'api');
 
     const moduleDirectories = fs.readdirSync(modulesPath);
 
     moduleDirectories.forEach(moduleDir => {
-        const modulePath = path.join(modulesPath, moduleDir);
-
-        const controllersPath = path.join(modulePath, 'controllers');
-
-        const controllerFiles = fs.readdirSync(controllersPath);
-
-        controllerFiles.forEach(file => {
-            const controllerName = path.basename(file, '.js');
-            const controllerModule = require(path.join(controllersPath, file));
-            controllers[moduleDir] = { [controllerName]: controllerModule }
-        });
+        const routesFilePath = path.join(modulesPath, moduleDir, 'routes.json');
+        try {
+            const routesData = fs.readFileSync(routesFilePath, 'utf8');
+            const moduleRoutes = JSON.parse(routesData);
+            routes.push(...moduleRoutes.map(route => ({ ...route, module: moduleDir })));
+        } catch (err) {
+            console.error(`Error loading routes from module ${moduleDir}:`, err);
+        }
     });
-    return controllers;
+
+    return routes;
 }
 
-module.exports = { readRoutesFile, validateRoutes, getRoutes };
+function loadControllerRoutes(req, res, next) {
+    const routes = loadRoutes();
+
+    for (const route of routes) {
+        if (req.url === route.path) {
+            const [moduleName, functionName] = route.action.split('.');
+            const controllerFolder = path.join(__dirname, '..', 'api', moduleName, 'controllers');
+            const controllerFiles = fs.readdirSync(controllerFolder).filter(file => file.endsWith('.js'));
+
+            for (const file of controllerFiles) {
+                const controllerPath = path.join(controllerFolder, file);
+                const controller = require(controllerPath);
+                if (controller && typeof controller[functionName] === 'function') {
+                    if (route.public) {
+                        controller[functionName](req, res);
+                    } else {
+                        verifyToken(req, res, next)
+                    }
+                    return;
+                }
+            }
+        }
+    }
+}
+
+module.exports = { initializeServer, router };

@@ -62,15 +62,15 @@ function validateRoutes(routes) {
     Object.keys(routes).forEach(moduleName => {
         const moduleRoutes = routes[moduleName];
 
-        moduleRoutes.forEach(obj => {
+        moduleRoutes.forEach((obj, index) => {
 
             const missingKeys = requiredKeys.filter(key => !(key in obj));
             const emptyKeys = requiredKeys.filter(key => key in obj && (!obj[key] && obj[key] !== false));
 
             if (missingKeys.length > 0) {
-                validationErrors.push(`[Warning]: Missing the following keys: ${missingKeys.join(', ')} in [Module] : [API] :`.underline.yellow);
+                validationErrors.push(`[Warning]: Missing the following [keys]: ${missingKeys.join(', ')} in [API] ${obj.path}:`.underline.yellow);
             } else if (emptyKeys.length > 0) {
-                validationErrors.push(`[Warning]: Empty values for the following keys: ${emptyKeys.join(', ')} in [Module] : [API] :`.underline.yellow);
+                validationErrors.push(`[Warning]: Empty values for the following [keys]: ${emptyKeys.join(', ')} [API] : ${obj.path} `.underline.yellow);
             } else if (!validMethods.includes(obj.method.toLowerCase())) {
                 validationErrors.push(`[Error]: Invalid method value "${obj.method}" for [API] :"${obj.path}"`.red);
             } else if (!validBooleanValues.includes(obj.public)) {
@@ -86,8 +86,6 @@ function validateRoutes(routes) {
 
     if (validationErrors.length > 0) {
         validationErrors.forEach(error => console.error(error));
-        return false;
-    } else {
         return true;
     }
 }
@@ -100,13 +98,15 @@ function loadRoutes() {
 
     moduleDirectories.forEach(moduleDir => {
         const routesFilePath = path.join(modulesPath, moduleDir, 'routes.json');
-        try {
-            const routesData = fs.readFileSync(routesFilePath, 'utf8');
-            const moduleRoutes = JSON.parse(routesData);
-            routes.push(...moduleRoutes.map(route => ({ ...route, module: moduleDir })));
-        } catch (err) {
-            console.error(`Error loading routes from module ${moduleDir}:`, err);
-        }
+        if (fs.existsSync(routesFilePath)) {
+            try {
+                const routesData = fs.readFileSync(routesFilePath, 'utf8');
+                const moduleRoutes = JSON.parse(routesData);
+                routes.push(...moduleRoutes.map(route => ({ ...route, module: moduleDir })));
+            } catch (err) {
+                console.error(`Error loading routes from module ${moduleDir}:`, err);
+            }
+        } else { console.error(`routes.json file not found in module ${moduleDir}`) }
     });
 
     return routes;

@@ -11,17 +11,24 @@ function getFunctions() {
         const modulePath = path.join(modulesPath, file);
 
         const functionsPath = path.join(modulePath, 'functions');
+        try {
+            if (fs.existsSync(functions)) {
 
-        const functionsFiles = fs.readdirSync(functionsPath);
+                const functionsFiles = fs.readdirSync(functionsPath);
 
-        functionsFiles.forEach(file => {
-            if (file.startsWith('module')) {
-                const functionName = path.basename(file, '.js');
-                const functionModule = require(path.join(functionsPath, file));
-                functions[functionName] = functionModule
+                functionsFiles.forEach(file => {
+                    if (file.startsWith('module')) {
+                        const functionName = path.basename(file, '.js');
+                        const functionModule = require(path.join(functionsPath, file));
+                        functions[functionName] = functionModule
+                    }
+                });
             }
-        });
+        } catch (err) {
+            console.warn(err);
+        }
     });
+
     return functions;
 }
 

@@ -9,16 +9,23 @@ function getServices() {
 
     moduleDirectories.forEach(moduleDir => {
         const modulePath = path.join(modulesPath, moduleDir);
-        const servicesPath = path.join(modulePath, 'services');
-        const servicesFiles = fs.readdirSync(servicesPath);
 
-        servicesFiles.forEach(file => {
-            if (file.startsWith('module')) {
-                const serviceName = path.basename(file, '.js');
-                const serviceModule = require(path.join(servicesPath, file));
-                services[moduleDir] = { [serviceName]: serviceModule }
+        const servicesPath = path.join(modulePath, 'services');
+        try {
+            if (fs.existsSync(servicesPath)) {
+                const servicesFiles = fs.readdirSync(servicesPath);
+
+                servicesFiles.forEach(file => {
+                    if (file.startsWith('module')) {
+                        const serviceName = path.basename(file, '.js');
+                        const serviceModule = require(path.join(servicesPath, file));
+                        services[moduleDir] = { [serviceName]: serviceModule }
+                    }
+                });
             }
-        });
+        } catch (err) {
+            console.warn(err);
+        }
 
     });
     return services;

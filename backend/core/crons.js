@@ -4,6 +4,7 @@ const path = require('path');
 function getCrons() {
     const crons = {};
     const modulesPath = path.join(__dirname, '..', 'crons');
+
     const moduleDirectories = fs.readdirSync(modulesPath);
 
     moduleDirectories.forEach(file => {

@@ -88,6 +88,7 @@ function validateRoutes(routes) {
         validationErrors.forEach(error => console.error(error));
         return true;
     }
+    else { return true; }
 }
 
 function loadRoutes() {

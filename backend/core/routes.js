@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 var colors = require('colors');
 const { verifyToken } = require('../middleware/jwtAuthMiddleware');
+const { checkMigrations } = require('../core/checkMigrations');
 colors.enable()
 
 function initializeServer(createServer) {
@@ -11,15 +12,22 @@ function initializeServer(createServer) {
         .then(routes => {
 
             const isValid = validateRoutes(routes);
-            if (isValid) {
 
-                createServer();
+            if (isValid) {
+                checkMigrations((isMigrationsUpToDate) => {
+                    if (isMigrationsUpToDate) {
+                        createServer();
+                    } else {
+                        createServer()
+                    }
+                });
+
+                // createServer();
+
                 router.use((req, res, next) => {
                     loadControllerRoutes(req, res, next);
                     next();
                 });
-
-
             }
         }).catch(error => {
             console.error("Error reading or validating routes:", error);

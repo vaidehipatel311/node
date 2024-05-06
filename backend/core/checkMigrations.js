@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { Sequelize, DataTypes } = require('sequelize');
 const { exec } = require('child_process');
-const jsondata = require('../db/config/config.json');
+const jsondata = require('../db/config/config.js');
 const readline = require('readline');
 
 const sequelize = new Sequelize(

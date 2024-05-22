@@ -7,13 +7,12 @@ function getFunctions() {
 
     const moduleDirectories = fs.readdirSync(modulesPath);
 
-    moduleDirectories.forEach(file => {
-        const modulePath = path.join(modulesPath, file);
+    moduleDirectories.forEach(moduleDir => {
+        const modulePath = path.join(modulesPath, moduleDir);
 
         const functionsPath = path.join(modulePath, 'functions');
         try {
-            if (fs.existsSync(functions)) {
-
+            if (fs.existsSync(functionsPath)) {
                 const functionsFiles = fs.readdirSync(functionsPath);
 
                 functionsFiles.forEach(file => {

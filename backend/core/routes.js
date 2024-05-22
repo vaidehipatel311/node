@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 var colors = require('colors');
 const { verifyToken } = require('../middleware/jwtAuthMiddleware');
-const { checkMigrations } = require('../core/checkMigrations');
+const { checkMigrations } = require('./migrations');
 colors.enable()
 
 function initializeServer(createServer) {
@@ -21,8 +21,6 @@ function initializeServer(createServer) {
                         createServer()
                     }
                 });
-
-                // createServer();
 
                 router.use((req, res, next) => {
                     loadControllerRoutes(req, res, next);

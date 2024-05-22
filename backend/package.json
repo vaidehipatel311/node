@@ -2,10 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+  "main": "./bin/framework.js",
+  "bin": {
+    "framework": "./bin/framework.js start"
   },
   "keywords": [],
   "author": "",
@@ -20,11 +19,14 @@
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.9.4",
     "node-cron": "^3.0.3",
     "nodemon": "^3.1.0",
     "sequelize": "^6.37.3",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "umzug": "^2.3.0",
+    "yargs": "^17.7.2"
   }
 }

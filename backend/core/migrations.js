@@ -1,34 +1,26 @@
 const path = require('path');
 const fs = require('fs');
-const { Sequelize, DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const { exec } = require('child_process');
-const jsondata = require('../db/config/config.js');
 const readline = require('readline');
+const { db } = require('../core/models');
 
-const sequelize = new Sequelize(
-    jsondata.development.database,
-    jsondata.development.username,
-    jsondata.development.password, {
-    dialect: jsondata.development.dialect,
-    logging: false
-});
-
-const SequelizeMeta = sequelize.define('SequelizeMeta', {
+const SequelizeMeta = db.sequelize.define('SequelizeMeta', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true
+        primaryKey: true,
     }
 }, {
     tableName: 'SequelizeMeta',
-    timestamps: false
+    timestamps: false,
 });
 
 function checkMigrations(callback) {
-    const migrationFiles = loadMigrations();
+    const migrationFiles = getMigrations();
 
     try {
-        SequelizeMeta.findAll({ raw: true }).then(executedMigrations => {
+        SequelizeMeta.findAll({ raw: true, logging: false }).then(executedMigrations => {
             const executedMigrationNames = executedMigrations.map(migration => migration.name.split('.')[0]);
 
             const pendingMigrations = migrationFiles.filter(file => !executedMigrationNames.includes(file));
@@ -67,7 +59,7 @@ function checkMigrations(callback) {
     }
 }
 
-function loadMigrations() {
+function getMigrations() {
     const migrationsPath = path.join(__dirname, '..', 'db', 'migrations');
 
     try {
@@ -84,5 +76,5 @@ function loadMigrations() {
 }
 
 module.exports = {
-    checkMigrations: checkMigrations
+    checkMigrations
 };
